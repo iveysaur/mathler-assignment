@@ -2,37 +2,107 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.title {
+  font-size: 32px;
+  margin-top: 100px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.problem {
+  font-size: 18px;
+  margin-bottom: 20px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.highlight {
+  background-color: #fceb4e;
+  border-radius: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.attempt-row {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+}
+
+.attempt-box {
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+
+  background-color: #fff;
+  width: 52px;
+  height: 36px;
+  margin: 2px;
+  border: 2px #d4ddeb solid;
+  border-radius: 4px;
+
+  font-size: 20px;
+  font-weight: bold;
 }
 
-.App-link {
-  color: #61dafb;
+.input-container {
+  margin-top: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.input-row {
+  display: flex;
+  justify-content: center;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #d4ddeb;
+  height: 46px;
+  width: 36px;
+  margin: 2px;
+  padding: 2px;
+  border-radius: 4px;
+
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.input-box:hover {
+  background-color: #bfc7d3;
+}
+
+.wide-input {
+  width: 75px;
+}
+
+.correct {
+  background-color: #22c55f;
+  border-color: #22c55f;
+  color: #fff;
+}
+.input-box.correct:hover {
+  background-color: #1eaf53;
+  border-color: #1eaf53;
+}
+
+.incorrect {
+  background-color: #717f93;
+  border-color: #717f93;
+  color: #fff;
+}
+.input-box.incorrect:hover {
+  background-color: #717f93;
+}
+
+.different {
+  background-color: #ebb30b;
+  border-color: #ebb30b;
+  color: #fff;
+}
+.input-box.different:hover {
+  background-color: #d9a50b;
+  border-color: #d9a50b;
+}
+
+.evalNote {
+  margin-top: 20px;
+  font-weight: bold;
 }
