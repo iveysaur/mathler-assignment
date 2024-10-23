@@ -5,4 +5,6 @@ export const NUM_ATTEMPTS = 6;
 export const ALLOWABLE_INPUT = new RegExp(
   /^([0-9])|([\+\-\*\/])|(Enter)|(Delete)+/
 );
-export const INPUT_SECOND_ROW = ["Enter", "+", "-", "*", "/", "Delete"];
+
+export const OPERATORS = ["+", "-", "*", "/"];
+export const INPUT_SECOND_ROW = ["Enter", ...OPERATORS, "Delete"];

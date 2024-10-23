@@ -9,6 +9,7 @@ import {
   NUM_ATTEMPTS,
   ATTEMPT_LENGTH,
   ALLOWABLE_INPUT,
+  OPERATORS,
 } from "./constants";
 
 //
@@ -38,11 +39,17 @@ function App() {
   //
   const handleInputClick = (input: string) => {
     if (correct || attempts.length === NUM_ATTEMPTS) return;
-
     setIncorrectEval(false);
     if (input === "Enter") {
-      if (currentAttempt.length !== ATTEMPT_LENGTH) return;
-      if (eval(currentAttempt.join("")) === eval(SOLUTION)) {
+      if (
+        currentAttempt.length !== ATTEMPT_LENGTH ||
+        !isValidEval(currentAttempt) ||
+        hasInvalidZero(currentAttempt)
+      ) {
+        return;
+      }
+
+      if (isCommutative([...currentAttempt])) {
         if (currentAttempt.join("") !== SOLUTION) {
           setAttempts(attempts.concat(SOLUTION));
           setCurrentInput([]);
@@ -70,6 +77,42 @@ function App() {
     if (currentAttempt.length >= 6) return;
 
     setCurrentInput(currentAttempt.concat(input));
+  };
+
+  //
+  const isCommutative = (attempt: string[]) => {
+    const sameEval = eval(attempt.join("")) === eval(SOLUTION);
+    const sameCharacters =
+      attempt.sort().join("") === SOLUTION.split("").sort().join("");
+
+    return sameEval && sameCharacters;
+  };
+
+  //
+  const hasInvalidZero = (attempt: string[]) => {
+    if (attempt[0] === "0") return true;
+
+    return (
+      attempt.filter((character, index) => {
+        if (index === 0 || index === ATTEMPT_LENGTH - 1) return;
+
+        const zeroFollowsOperator =
+          character === "0" && OPERATORS.includes(attempt[index - 1]);
+        const operatorFollowsZero =
+          character === "0" && OPERATORS.includes(attempt[index + 1]);
+        return zeroFollowsOperator && !operatorFollowsZero;
+      }).length > 0
+    );
+  };
+
+  //
+  const isValidEval = (attempt: string[]) => {
+    try {
+      eval(attempt.join(""));
+      return true;
+    } catch (e: any) {
+      return false;
+    }
   };
 
   //
