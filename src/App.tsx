@@ -31,55 +31,90 @@ function App() {
 
   //
   const handleKeyboardPress = (e: any) => {
+    // The event key for Delete is "Backspace", convert it to match
+    // what is used in the rest of the app.
     const input = e.key === "Backspace" ? "Delete" : e.key;
+
+    // Check that the keyboard input is one of the valid input options.
     if (!ALLOWABLE_INPUT.test(input)) return;
+
     handleInputClick(input);
   };
 
   //
   const handleInputClick = (input: string) => {
+    // Ignore any inputs after the game is done.
     if (correct || attempts.length === NUM_ATTEMPTS) return;
-    setIncorrectEval(false);
-    if (input === "Enter") {
-      if (
-        currentAttempt.length !== ATTEMPT_LENGTH ||
-        !isValidEval(currentAttempt) ||
-        hasInvalidZero(currentAttempt)
-      ) {
-        return;
-      }
 
-      if (isCommutative([...currentAttempt])) {
-        if (currentAttempt.join("") !== SOLUTION) {
-          setAttempts(attempts.concat(SOLUTION));
-          setCurrentInput([]);
-          setCorrect(true);
-          return;
-        }
-        setAttempts(attempts.concat(currentAttempt.join("")));
+    // Reset the incorrect eval message once the attempt changes.
+    setIncorrectEval(false);
+
+    switch (input) {
+      case "Enter":
+        handleEnter();
+        break;
+      case "Delete":
+        setCurrentInput(currentAttempt.slice(0, -1));
+        break;
+      default:
+        // Ignore any inputs after the attempt is full.
+        if (currentAttempt.length >= ATTEMPT_LENGTH) return;
+        setCurrentInput(currentAttempt.concat(input));
+        break;
+    }
+  };
+
+  //
+  const handleEnter = () => {
+    // Don't allow incomplete attempts, invalid evals (errors), and
+    // attempts with invalid zeros.
+    if (
+      currentAttempt.length !== ATTEMPT_LENGTH ||
+      !isValidEval(currentAttempt) ||
+      hasInvalidZero(currentAttempt)
+    ) {
+      return;
+    }
+
+    if (isCommutative([...currentAttempt])) {
+      // When the equation is correct but in a different order.
+      if (currentAttempt.join("") !== SOLUTION) {
+        // Reorder to match the expected equation.
+        setAttempts(attempts.concat(SOLUTION));
         setCurrentInput([]);
         setCorrect(true);
         return;
       }
-      if (eval(currentAttempt.join("")) !== eval(SOLUTION)) {
-        setIncorrectEval(true);
-        return;
-      }
+
+      // When the equation is an exact match.
       setAttempts(attempts.concat(currentAttempt.join("")));
       setCurrentInput([]);
-      if (attempts.length === NUM_ATTEMPTS - 1) setIncorrectFinish(true);
+      setCorrect(true);
       return;
     }
-    if (input === "Delete") {
-      setCurrentInput(currentAttempt.slice(0, -1));
-      return;
-    }
-    if (currentAttempt.length >= 6) return;
 
-    setCurrentInput(currentAttempt.concat(input));
+    // Don't allow attempts that do not evaluate to the correct number.
+    if (eval(currentAttempt.join("")) !== eval(SOLUTION)) {
+      setIncorrectEval(true);
+      return;
+    }
+
+    // Update the attempt list since this attempt is valid but incorrect.
+    setAttempts(attempts.concat(currentAttempt.join("")));
+    setCurrentInput([]);
+
+    // If this was the last attempt, end the game with a loss.
+    if (attempts.length === NUM_ATTEMPTS - 1) setIncorrectFinish(true);
+    return;
   };
 
-  //
+  // Check if an attempt is commutative with the solution.
+  // This can give a false positive in the very rare case that an
+  // attempt has all the right values but technically is a different equation.
+  // Ex: 11+1*1 and 11*1+1.
+  // I decided to allow these cases, I am not sure what the original
+  // Mathler does in these cases since it is too rare to get a chance to test
+  // it myself on their end.
   const isCommutative = (attempt: string[]) => {
     const sameEval = eval(attempt.join("")) === eval(SOLUTION);
     const sameCharacters =
@@ -105,7 +140,7 @@ function App() {
     );
   };
 
-  //
+  // Catch and disallow any evals that would error.
   const isValidEval = (attempt: string[]) => {
     try {
       eval(attempt.join(""));
